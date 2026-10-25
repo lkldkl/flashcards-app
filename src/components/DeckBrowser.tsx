@@ -2,20 +2,49 @@
 
 import { mockDecks } from "@/mock/data";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FullDeckDto } from "@/shared/types";
+import Link from "next/link";
 
 
 export default function DeckBrowser() {
 
     const [decks, setDecks] = useState<FullDeckDto[]>(mockDecks)
+    const [search, setSearch] = useState("")
+
+    useEffect(() => {
+        let data = mockDecks;
+        if(search.trim())
+            data = data.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
+            setDecks(data);
+    },[search])
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="flex flex-col gap-8 md:flex-row">
+                {/*Sidebar*/}
+                <aside className="w-full md:w-64 shrink-0">
+                    <div className="flex flex-col gap-4 md:sticky md:top-20">
+                        <input
+                            placeholder="Pretraga spilova..."
+                            className="w-full rounded border border-gray-200 px-3 py-2"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}/>
+                        <Link
+                            href="/deck-create"
+                            className="inline-flex items-center justify-center rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+                                + Napravi spil
+                        </Link>
+                    </div>
+                </aside>
                 {/*Cards*/}
                 <section className="flex-1">
-                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {decks.length === 0 ? (
+                        <p className="text-center text-gray-500">
+                            Nema spilova za dati filter.
+                        </p>
+                    ) : (
+                        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {decks.map((deck, idx) => (
                             <div key={deck.id} className="group relative overflow-hidden rounded-lg border border-gray-200">
                             <Image 
@@ -31,6 +60,8 @@ export default function DeckBrowser() {
                         </div>
                         ))}
                     </div>
+                    )}
+                    
                 </section>
             </div>
 
