@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { FullDeckDto } from "@/shared/types";
 import Link from "next/link";
+import Card from "./Card";
+import Sidebar from "./Sidebar";
 
 
 export default function DeckBrowser() {
@@ -23,20 +25,7 @@ export default function DeckBrowser() {
         <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="flex flex-col gap-8 md:flex-row">
                 {/*Sidebar*/}
-                <aside className="w-full md:w-64 shrink-0">
-                    <div className="flex flex-col gap-4 md:sticky md:top-20">
-                        <input
-                            placeholder="Pretraga spilova..."
-                            className="w-full rounded border border-gray-200 px-3 py-2"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}/>
-                        <Link
-                            href="/deck-create"
-                            className="inline-flex items-center justify-center rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-                                + Napravi spil
-                        </Link>
-                    </div>
-                </aside>
+                <Sidebar search={search} setSearch={setSearch} />
                 {/*Cards*/}
                 <section className="flex-1">
                     {decks.length === 0 ? (
@@ -45,21 +34,10 @@ export default function DeckBrowser() {
                         </p>
                     ) : (
                         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {decks.map((deck, idx) => (
-                            <div key={deck.id} className="group relative overflow-hidden rounded-lg border border-gray-200">
-                            <Image 
-                                src="https://picsum.photos/300/400"
-                                alt=""
-                                width={400}
-                                height={300}
-                                className="h-40 w-full object-cover transition-transform duration-200 group-hover:scale-105"/>
-                            <div className="p-4">
-                                <h3 className="font-semibold">{deck.name}</h3>
-                                <p className="text-sm text-gray-500">{deck.subject.name}</p>
-                            </div>
+                            {decks.map((deck) => (
+                                <Card key={deck.id} deck={deck}/>
+                            ))}
                         </div>
-                        ))}
-                    </div>
                     )}
                     
                 </section>
