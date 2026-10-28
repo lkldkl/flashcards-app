@@ -1,31 +1,37 @@
 "use client";
 
 import { mockDecks } from "@/mock/data";
-import Image from "next/image";
 import { useState, useEffect } from "react";
-import { FullDeckDto } from "@/shared/types";
-import Link from "next/link";
+import { FullSubjectDto, FullDeckDto } from "@/shared/types";
 import Card from "./Card";
 import Sidebar from "./Sidebar";
 
+type Props = { subjects: FullSubjectDto[] }
 
-export default function DeckBrowser() {
 
-    const [decks, setDecks] = useState<FullDeckDto[]>(mockDecks)
-    const [search, setSearch] = useState("")
+export default function DeckBrowser({ subjects } : Props) {
+
+    const [decks, setDecks] = useState<FullDeckDto[]>(mockDecks);
+    const [search, setSearch] = useState("");
+    const [subjectId, setSubjectId] = useState<number | null>(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(true);
         let data = mockDecks;
+        if(subjectId !== null)
+            data = data.filter(d => d.subject.id === subjectId)
         if(search.trim())
             data = data.filter(d => d.name.toLowerCase().includes(search.toLowerCase()));
-            setDecks(data);
-    },[search])
+        setDecks(data);
+        setLoading(false);
+    },[subjectId, search])
 
     return (
         <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="flex flex-col gap-8 md:flex-row">
                 {/*Sidebar*/}
-                <Sidebar search={search} setSearch={setSearch} />
+                <Sidebar search={search} setSearch={setSearch} subjectId={subjectId} setSubjectId={setSubjectId} subjects={subjects}/>
                 {/*Cards*/}
                 <section className="flex-1">
                     {decks.length === 0 ? (
